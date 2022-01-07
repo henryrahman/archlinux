@@ -1,0 +1,33 @@
+iwctl --passphrase "food junk loop clock people" station wlan0 connect "SSID"
+shred /dev/sda
+fdisk /dev/sda
+mkfs.ext4 /dev/sda1
+mount /dev/sda1 /mnt
+echo "http://mirror.xeondb.com/archlinux/$repo/os/$arch" >> /etc/pacman.d/mirrorlist
+pacstrap /mnt base base-devel linux linux-firmware grub networkmanager git vim xorg-server xorg-xinit dmenu firefox
+genfstab -U /mnt >> /mnt/etc/fstab
+arch-chroot /mnt useradd -m -g wheel user
+arch-chroot /mnt passwd user
+arch-chroot /mnt curl https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts >> /etc/hosts
+arch-chroot /mnt grub-install /dev/sda
+arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+arch-chroot /mnt systemctl enable NetworkManager
+arch-chroot /mnt git clone https://git.suckless.org/dwm
+arch-chroot /mnt cd dwm
+arch-chroot /mnt make clean install
+arch-chroot /mnt cd ..
+arch-chroot /mnt rm -r dwm
+arch-chroot /mnt git clone https://git.suckless.org/st
+arch-chroot /mnt cd st
+arch-chroot /mnt make clean install
+arch-chroot /mnt cd ..
+arch-chroot /mnt rm -r st
+arch-chroot /mnt echo "http://mirror.xeondb.com/archlinux/$repo/os/$arch" >> /etc/pacman.d/mirrorlist
+arch-chroot /mnt echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers
+arch-chroot /mnt echo "exec dwm" >> /home/user/.xinitrc
+arch-chroot /mnt echo "startx" >> /home/user/.bash_profile
+arch-chroot /mnt git clone https://github.com/arkenfox/user.js
+arch-chroot /mnt mv user.js/user.js /home/user/
+arch-chroot /mnt rm -r user.js
+umount -R /mnt
+reboot
